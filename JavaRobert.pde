@@ -277,17 +277,18 @@ void message (int mode) {
 }
 
 void buzzer () {
-  JSONArray currentScene = sequencesJSON.getJSONArray(scene);
-  if(buzzCount < currentScene.size()){
-    int mode = currentScene.getInt(buzzCount);
-    message(mode);
-    buzzCount++;
-  } else if (scene < sequencesJSON.size()){
-    scene++;
-    buzzCount = 0;
-    buzzer();
+  if (scene < sequencesJSON.size()){
+    JSONArray currentScene = sequencesJSON.getJSONArray(scene);
+    if(buzzCount < currentScene.size()){
+      int mode = currentScene.getInt(buzzCount);
+      message(mode);
+      buzzCount++;
+    } else {
+      scene++;
+      buzzCount = 0;
+      buzzer();
+    }
   }
-  
   updatePlaybackController();
 }
 
