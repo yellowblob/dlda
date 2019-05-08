@@ -104,15 +104,17 @@ void setup() {
   cp5 = new ControlP5(this);
   for (int i=0;i<3;i++) {
     cp5.addBang(listNames[i])
-       .setPosition(20+i*80, 20)
+       .setPosition(20+i*80, 320)
        .setSize(40, 40)
        .setId(i)
        ;
   }
   cp5.addBang("buzzer")
-       .setPosition(20+3*80, 20)
-       .setSize(40, 40)
+       .setPosition(20, 20)
+       .setSize(80, 80)
        .setId(3)
+       .setColorForeground(color(255,0,0))
+       .setColorActive(color(255,50,50))
        ;
   cp5.addBang("reset")
        .setPosition(20+4*80, 20)
@@ -159,8 +161,8 @@ void draw() {
   fill(serialControlColor);
   ellipse(30,150,20,20);
   fill(255);
-  text("Playback Position:",20, 100);
-  text("Scene: " + scene + " Question: " + buzzCount,20, 120);
+  text("Playback Position:",120, 30);
+  text("Scene: " + scene + " Question: " + buzzCount,120, 50);
   text(phone.address(), 240, 215);
 }
 
@@ -239,11 +241,9 @@ void oscEvent(OscMessage theOscMessage) {
 void message (int mode) {
   
     String messageString;
-    if(mode == fast && allQuestions[knowledge].count<2 && random(10)<1){
-      messageString = allQuestions[knowledge].getQuestion();
-    } else {
-      messageString = allQuestions[mode].getQuestion();
-    }
+    
+    messageString = allQuestions[mode].getQuestion();
+    
   
     OscMessage myMessage = new OscMessage("/cue/T2/text");
     myMessage.add(messageString); /* add a string to the osc message */
