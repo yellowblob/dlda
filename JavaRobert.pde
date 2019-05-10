@@ -22,8 +22,9 @@ final int fixed = 2;
 final int knowledge = 3;
 final String[] players = {"Michael als Michael", "Michael als Christian", "Christian als Christian", "Christian als Michael"};
 float[] playerProbability = {0.333,0.167,0.333,0.167};
-int[] fixedPlayers = {3,2,2,1,0,0,2,0,2,0,2,0,2,0,0};
+int[] fixedPlayers = {3,0,2,1,0,0,2,0,2,0,2,0,2,0,0};
 JSONArray sequencesJSON;
+int playerCounterMichael;
 
 color green = color(0,255,0);
 color red = color(255,0,0);
@@ -33,6 +34,7 @@ int serialControlTimer = 100;
 
 int scene = 0;
 int buzzCount;
+int playerChooser;
 
 class Questions {
   int count = -1;
@@ -239,7 +241,7 @@ void oscEvent(OscMessage theOscMessage) {
 //*********** Executor Functions *****************//
 
 void message (int mode) {
-  
+    
     String messageString;
     
     messageString = allQuestions[mode].getQuestion();
@@ -253,15 +255,34 @@ void message (int mode) {
     myMessage.add(messageString); /* add a string to the osc message */
     oscP5.send(myMessage, qLab);  /* send the message */
   
-    String playerString;
+    String playerString = "";
     if(mode == fixed && allQuestions[fixed].count < fixedPlayers.length){
-      playerString = players[fixedPlayers[allQuestions[mode].count]];
+      playerChooser = fixedPlayers[allQuestions[mode].count];
     } else {
-      float playerProbabilityDecider = random(1);
-      int playerChooser;
-      for(playerChooser = 0; playerProbabilityDecider > playerProbability[playerChooser]; playerChooser++){}
-      playerString = players[playerChooser];
+      // Check if previuos player was Christian and give next Question to Michael
+      if(playerChooser == 2 || playerChooser == 3){
+        while(playerChooser == 2 || playerChooser == 3){
+          proposePlayer();
+        }
+        
+      } else { // if Michael did answer less than two questions before choose a random Player else give it to Christian
+        if (playerCounterMichael < 2){
+          proposePlayer();
+        } else{
+          while(playerChooser == 0 || playerChooser == 1){
+            proposePlayer();
+          }
+        }
+      }
     }
+    
+    if(playerChooser == 0 || playerChooser == 1){
+      playerCounterMichael++;
+    } else {
+      playerCounterMichael = 0;
+    }
+    
+    playerString = players[playerChooser];
     
     myMessage = new OscMessage("/cue/T1/text");
     myMessage.add(playerString); /* add a string to the osc message */
@@ -274,6 +295,11 @@ void message (int mode) {
     // start TextCues
     myMessage = new OscMessage("/cue/T0/start");
     oscP5.send(myMessage, qLab);
+}
+
+void proposePlayer(){
+  float playerProbabilityDecider = random(1);
+  for(playerChooser = 0; playerProbabilityDecider > playerProbability[playerChooser]; playerChooser++){}
 }
 
 void buzzer () {
