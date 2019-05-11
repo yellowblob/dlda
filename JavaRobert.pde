@@ -15,9 +15,9 @@ NetAddress phone;
 
 ControlP5 cp5;
 
-final String[] listNames = {"fast", "medium","fixed", "knowledge"};
+final String[] listNames = {"fast", "randChristian","fixed", "knowledge"};
 final int fast = 0;
-final int medium = 1;
+final int randChristian = 1;
 final int fixed = 2;
 final int knowledge = 3;
 final String[] players = {"Michael als Michael", "Michael als Christian", "Christian als Christian", "Christian als Michael"};
@@ -243,8 +243,12 @@ void oscEvent(OscMessage theOscMessage) {
 void message (int mode) {
     
     String messageString;
-    
-    messageString = allQuestions[mode].getQuestion();
+    if(mode == randChristian){
+       messageString = allQuestions[0].getQuestion();
+    } else {
+       messageString = allQuestions[mode].getQuestion();
+    }
+   
     
   
     OscMessage myMessage = new OscMessage("/cue/T2/text");
@@ -258,6 +262,8 @@ void message (int mode) {
     String playerString = "";
     if(mode == fixed && allQuestions[fixed].count < fixedPlayers.length){
       playerChooser = fixedPlayers[allQuestions[mode].count];
+    } else if (mode == randChristian){
+      playerChooser = 2;
     } else {
       // Check if previuos player was Christian and give next Question to Michael
       if(playerChooser == 2 || playerChooser == 3){
